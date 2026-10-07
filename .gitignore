@@ -6,11 +6,22 @@ __pycache__/
 .vscode/
 .DS_Store
 *.mp4
+*.avi
+*.mkv
+*.mov
 *.gguf
 
-# Keep model files required for the project
-!yolo11s-pose.pt
-!runs/
-!runs/**/
-!runs/**/weights/*.pt
+# Model weights (Ultralytics auto-downloads weights on first run)
+*.pt
+models/*.pt
+!models/.gitkeep
+
+# Logs and runtime artifacts
+logs/
+output/
+*.log
+*.jpg
+*.jpeg
+*.png
+
 .aider*

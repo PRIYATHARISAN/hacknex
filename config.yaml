@@ -1,0 +1,78 @@
+models:
+  detection: "models/yolo11m.pt"
+  detector: "models/yolo11m.pt"
+  pose: "models/yolo11s-pose.pt"
+  ppe: "models/workplace_ppe.pt"
+
+tracking:
+  tracker: "bytetrack.yaml"
+  confidence: 0.35
+  iou: 0.5
+  track_buffer: 30
+
+video:
+  input: "wp1.mp4"
+  output: "output/annotated/result.mp4"
+
+zones_file: "configs/zones.yaml"
+
+zones:
+  restricted_zone:
+    type: polygon
+    name: "Restricted Zone"
+    severity: "HIGH"
+    points:
+      - [0.28, 0.31]
+      - [0.56, 0.31]
+      - [0.57, 0.535]
+      - [0.34, 0.60]
+      - [0.27, 0.46]
+
+behavior:
+  restricted_zone_min_duration: 1.5
+  restricted_zone_seconds: 1.5
+  no_helmet_seconds: 2.0
+  no_vest_seconds: 2.0
+  fall_persistence: 1.0
+  fall_duration_seconds: 1.0
+  standing_seconds: 5.0
+  event_cooldown: 5.0
+  event_cooldown_seconds: 5.0
+
+display:
+  show_tracking: true
+  show_pose: true
+  show_zone: true
+  show_ppe: true
+  show_behavior: true
+  show_events: true
+  show_fps: true
+  show_dashboard: true
+  window_width: 1280
+  window_height: 720
+
+output:
+  save_video: true
+  save_json: true
+  save_csv: true
+  events_json: "output/events/events.json"
+  events_csv: "output/events/events.csv"
+
+performance:
+  image_size: 640
+  pose_every_n_frames: 2
+  device: "auto"
+
+severity_rules:
+  RESTRICTED_ZONE_ENTRY: "HIGH"
+  RESTRICTED_ZONE_EXIT: "LOW"
+  RESTRICTED_ZONE_VIOLATION: "HIGH"
+  NO_HELMET: "MEDIUM"
+  NO_VEST: "MEDIUM"
+  PPE_VIOLATION: "MEDIUM"
+  HIGH_RISK_PPE_VIOLATION: "HIGH"
+  HIGH_RISK_SAFETY_VIOLATION: "CRITICAL"
+  ABNORMAL_POSTURE: "MEDIUM"
+  FALL_SUSPECTED: "CRITICAL"
+  FALL_CONFIRMED: "CRITICAL"
+  PROLONGED_STANDING: "HIGH"

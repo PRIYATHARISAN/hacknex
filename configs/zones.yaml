@@ -1,0 +1,27 @@
+# Restricted Zone Polygonal Perimeter Configuration
+# Compact operational polygon tightly wrapping the marked warehouse loading bay & pallet staging zone.
+# Coordinates are normalized [0.0 - 1.0].
+
+restricted_zone:
+  name: "Restricted Zone"
+  type: polygon
+  severity: "HIGH"
+  points:
+    - [0.28, 0.31]
+    - [0.56, 0.31]
+    - [0.57, 0.535]
+    - [0.34, 0.60]
+    - [0.27, 0.46]
+
+zones:
+  restricted_zone:
+    type: polygon
+    name: "Restricted Zone"
+    severity: "HIGH"
+    points:
+      - [0.28, 0.31]
+      - [0.56, 0.31]
+      - [0.57, 0.535]
+      - [0.34, 0.60]
+      - [0.27, 0.46]
+    color: [30, 30, 220]

@@ -1,0 +1,71 @@
+# Intelligent Safety & Activity Monitoring Configuration
+
+system:
+  device: "auto"              # "auto", "cpu", 0, 1
+  log_level: "INFO"           # DEBUG, INFO, WARNING, ERROR
+  log_file: "logs/system.log"
+
+models:
+  object_model: "yolo11l.pt"
+  pose_model: "yolo11s-pose.pt"
+
+detection:
+  conf_threshold: 0.25
+  iou_threshold: 0.45
+  wrist_min_conf: 0.30
+
+tracking:
+  persist: true
+  tracker_type: "bytetrack.yaml"
+
+roi:
+  margin: 40                  # Default bounding margin for initial bag placement ROI
+  padding: 25                 # Hand/wrist zone expansion margin
+  proximity_limit: 80         # Base hand-near-bag distance in px
+  proximity_factor: 0.6       # Proportion of bag size for dynamic proximity
+
+association:
+  max_distance: 250.0         # Max center pixel distance to associate person & bag
+  overlap_weight: 0.4         # Weight given to bbox overlap in association score
+  distance_weight: 0.6        # Weight given to spatial proximity in association score
+  temporal_smooth_frames: 5   # Number of consistent frames required to switch associated owner
+  max_lost_frames: 30         # Frames to remember association when person/bag temporarily lost
+
+safety:
+  unattended_bag:
+    timeout_seconds: 10.0     # Stationary duration before triggering UNATTENDED_BAG
+    movement_threshold: 15.0  # Max pixel movement for bag to be considered stationary
+    min_separation_distance: 180.0 # Min distance between bag and person to be considered separated
+  
+  restricted_zone:
+    dwell_time_seconds: 3.0   # Max allowed dwell time inside restricted zone before alert
+
+zones:
+  restricted_zone:
+    type: polygon
+    name: "Restricted Zone"
+    severity: "HIGH"
+    points:
+      - [0.28, 0.31]
+      - [0.56, 0.31]
+      - [0.57, 0.535]
+      - [0.34, 0.60]
+      - [0.27, 0.46]
+  
+  alerts:
+    cooldown_seconds: 5.0     # Debounce period per entity/event type to prevent alert spam
+
+ppe:
+  enabled: false              # Set true only when dedicated PPE model weights are supplied
+  model_path: null
+
+snapshots:
+  enabled: true
+  output_dir: "events"
+  save_severities: ["WARNING", "CRITICAL"]
+
+reporting:
+  enabled: true
+  output_dir: "reports"
+  export_json: true
+  export_csv: true

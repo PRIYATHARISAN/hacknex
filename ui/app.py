@@ -6,6 +6,7 @@ Provides REST APIs for video playback, analysis execution, and real-time inciden
 import json
 import os
 import shutil
+import subprocess
 import threading
 from pathlib import Path
 from typing import Dict, Optional
@@ -74,7 +75,7 @@ async def list_videos():
     # Output videos
     if config.OUTPUT_LOGS_DIR.exists():
         for f in config.OUTPUT_LOGS_DIR.iterdir():
-            if f.suffix.lower() in [".mp4", ".avi", ".mov"]:
+            if f.suffix.lower() in [".mp4", ".avi", ".mov"] and not f.name.startswith("web_"):
                 videos.append({"name": f"[Annotated] {f.name}", "path": str(f.resolve())})
 
     return {"videos": videos}
@@ -175,6 +176,38 @@ async def stream_video(file: str = Query(...)):
     file_path = Path(file)
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Video file not found")
+    # OpenCV's default MPEG-4 Part 2 output can appear as a black player in
+    # Chrome. Convert annotated output once and serve the H.264 copy.
+    try:
+        output_dir = config.OUTPUT_LOGS_DIR.resolve()
+        is_annotated = file_path.resolve().parent == output_dir and file_path.name.startswith("annotated")
+        if is_annotated:
+            web_path = output_dir / f"web_{file_path.name}"
+            if not web_path.exists() or web_path.stat().st_mtime < file_path.stat().st_mtime:
+                ffmpeg_bin = shutil.which("ffmpeg") or "ffmpeg"
+                temp_path = output_dir / f".web_{file_path.name}.tmp.mp4"
+                result = subprocess.run(
+                    [
+                        ffmpeg_bin, "-y", "-i", str(file_path),
+                        "-c:v", "libx264", "-preset", "fast", "-crf", "23",
+                        "-c:a", "aac", "-pix_fmt", "yuv420p", "-movflags", "+faststart",
+                        str(temp_path),
+                    ],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.PIPE,
+                    text=True,
+                )
+                if result.returncode == 0 and temp_path.exists() and temp_path.stat().st_size > 0:
+                    os.replace(str(temp_path), str(web_path))
+                elif temp_path.exists():
+                    temp_path.unlink()
+                else:
+                    raise RuntimeError(result.stderr[-500:])
+            if web_path.exists():
+                file_path = web_path
+    except Exception as exc:
+        print(f"[Video Stream] Browser conversion unavailable: {exc}")
+
     return FileResponse(path=str(file_path), media_type="video/mp4")
 
 

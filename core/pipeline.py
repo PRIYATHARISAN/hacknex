@@ -186,12 +186,15 @@ class VisionPipeline:
             ffmpeg_bin, "-y",
             "-i", str(src_path),
             "-c:v", "libx264",
+            "-preset", "fast",
+            "-crf", "23",
+            "-c:a", "aac",
             "-pix_fmt", "yuv420p",
             "-movflags", "+faststart",
             str(temp_web_path)
         ]
         try:
-            res = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            res = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
             if res.returncode == 0 and temp_web_path.exists() and temp_web_path.stat().st_size > 0:
                 for _ in range(6):
                     try:
@@ -201,6 +204,8 @@ class VisionPipeline:
                     except PermissionError:
                         time.sleep(0.4)
                 print(f"[Pipeline] Warning: Could not replace destination due to file lock.")
+            elif res.returncode != 0:
+                print(f"[Pipeline] Warning: FFmpeg could not create browser-compatible video: {res.stderr[-500:]}")
         except Exception as e:
             print(f"[Pipeline] Note: Could not re-encode with ffmpeg ({e}), using default video.")
 

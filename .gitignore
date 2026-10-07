@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Caches and checkpoints
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Virtual Environments
+.env
+.venv/
+env/
+venv/
+ENV/
+
+# Output videos generated during runs (logs and data preserved)
+data/output_logs/*.mp4
+data/output_logs/*.avi
+data/output_logs/*.mov
+
+# Temporary test files
+test_*.mp4
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini

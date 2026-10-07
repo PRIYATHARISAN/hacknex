@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HNX26PSI07 — Autonomous Vision & Behaviour Understanding</title>
+  <link rel="stylesheet" href="/static/css/styles.css" />
+</head>
+<body>
+  <!-- White & Gold Header -->
+  <header>
+    <div class="brand">
+      <span class="brand-badge">HNX26PSI07</span>
+      <h1>Autonomous Vision & <span>Behaviour Understanding</span></h1>
+    </div>
+    <div class="system-status">
+      <div class="status-dot"></div>
+      <span id="statusState">Ready</span>
+      <span style="opacity: 0.35;">|</span>
+      <span>NVIDIA RTX 3050 (CUDA) • YOLO26m-Pose</span>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main>
+    <!-- Left Workspace: Upload, Video Player, Metrics -->
+    <div class="gold-card">
+      <!-- Upload Zone -->
+      <div class="upload-container">
+        <input type="file" id="videoFileInput" accept="video/mp4,video/avi,video/quicktime,video/x-matroska" style="display: none;" />
+        <div class="upload-dropzone" id="dropzone">
+          <div class="upload-icon">📹</div>
+          <div class="upload-text">Click or Drag & Drop Video File to Upload</div>
+          <div class="upload-hint">Supports MP4, AVI, MOV • Fast GPU Inference</div>
+        </div>
+
+        <div class="control-row">
+          <span class="selected-file-info" id="selectedFileInfo">No video uploaded yet</span>
+          <button id="runBtn" class="btn-gold" disabled>
+            <span>⚡</span>
+            <span id="btnText">Detect Behaviour</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Analysis Progress Bar -->
+      <div class="progress-container" id="progressContainer">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
+      <!-- Dual Video Comparison Stage (Side-by-Side) -->
+      <div class="comparison-container">
+        <!-- Dual Header Controls -->
+        <div class="comparison-toolbar">
+          <div class="toolbar-title">
+            <span>⚖️</span>
+            <span>Side-by-Side Video Comparison</span>
+          </div>
+          <div class="sync-actions" id="syncControls" style="display: none;">
+            <button id="playBothBtn" class="btn-sync" type="button">▶ Play Both</button>
+            <button id="pauseBothBtn" class="btn-sync" type="button">⏸ Pause Both</button>
+            <button id="syncTimeBtn" class="btn-sync" type="button">🔄 Sync Timestamps</button>
+          </div>
+        </div>
+
+        <div class="comparison-grid">
+          <!-- Left: Original Raw Video -->
+          <div class="video-panel">
+            <div class="video-panel-header">
+              <span class="panel-tag gold">Original Footage</span>
+              <span class="panel-file-info" id="rawVideoInfo">Raw Source Feed</span>
+            </div>
+            <div class="video-frame">
+              <div class="video-empty-state" id="rawEmptyState">
+                <span>📁</span>
+                <p>Upload a video to preview raw feed</p>
+              </div>
+              <video id="rawVideoPlayer" controls muted playsinline style="display: none;"></video>
+            </div>
+          </div>
+
+          <!-- Right: Model Detected Video -->
+          <div class="video-panel">
+            <div class="video-panel-header">
+              <span class="panel-tag green">AI Behaviour & Pose Tracking</span>
+              <span class="panel-file-info" id="detectedVideoInfo">Awaiting Detection</span>
+            </div>
+            <div class="video-frame">
+              <div class="video-empty-state" id="detectedEmptyState">
+                <span>🧠</span>
+                <p>Run detection to view AI tracking overlay</p>
+              </div>
+              <video id="detectedVideoPlayer" controls muted playsinline style="display: none;"></video>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Metrics Row -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <span class="metric-title">Detected Incidents</span>
+          <span class="metric-value red" id="totalIncidents">0</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-title">Tracked Entities</span>
+          <span class="metric-value gold" id="activeEntities">0</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-title">Acceleration Mode</span>
+          <span class="metric-value green" style="font-size: 1.1rem; font-weight: 700; margin-top: 0.2rem;">
+            NVIDIA CUDA
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel: Incident Audit Log ("Who & When") -->
+    <div class="gold-card">
+      <div class="sidebar-header">
+        <div class="sidebar-title">
+          <span>🚨</span>
+          <span>Incident Audit Log</span>
+        </div>
+        <span style="font-size: 0.75rem; color: var(--gold-dark); font-weight: 600;">Strict Who & When Rule</span>
+      </div>
+
+      <!-- Dynamic Incident Cards List -->
+      <div class="incident-list" id="incidentList">
+        <div style="color: var(--text-muted); text-align: center; padding: 3rem 1rem;">
+          No incidents detected. Upload a video and run detection.
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

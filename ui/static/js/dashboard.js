@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   rawVideoPlayer.addEventListener("play", () => {
     if (detectedVideoPlayer.src && detectedVideoPlayer.paused) {
-      detectedVideoPlayer.play();
+      detectedVideoPlayer.play().catch(() => {});
     }
   });
 
@@ -138,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   detectedVideoPlayer.addEventListener("play", () => {
     if (rawVideoPlayer.src && rawVideoPlayer.paused) {
-      rawVideoPlayer.play();
+      rawVideoPlayer.play().catch(() => {});
     }
   });
 
@@ -150,8 +150,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Sync Toolbar Buttons
   playBothBtn.addEventListener("click", () => {
-    rawVideoPlayer.play();
-    detectedVideoPlayer.play();
+    rawVideoPlayer.play().catch(() => {});
+    detectedVideoPlayer.play().catch(() => {});
   });
 
   pauseBothBtn.addEventListener("click", () => {

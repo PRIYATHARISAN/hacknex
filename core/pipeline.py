@@ -173,10 +173,17 @@ class VisionPipeline:
 
     def _convert_to_web_h264(self, video_path: str):
         """Converts an OpenCV-generated MP4 to browser-friendly H.264 using FFmpeg."""
-        src_path = Path(video_path)
+        import os
+        import shutil
+        import time
+
+        src_path = Path(video_path).resolve()
         temp_web_path = src_path.with_name(f"web_{src_path.name}")
+        time.sleep(0.3)
+
+        ffmpeg_bin = shutil.which("ffmpeg") or "ffmpeg"
         cmd = [
-            "ffmpeg", "-y",
+            ffmpeg_bin, "-y",
             "-i", str(src_path),
             "-c:v", "libx264",
             "-pix_fmt", "yuv420p",
@@ -186,8 +193,14 @@ class VisionPipeline:
         try:
             res = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             if res.returncode == 0 and temp_web_path.exists() and temp_web_path.stat().st_size > 0:
-                temp_web_path.replace(src_path)
-                print(f"[Pipeline] Output video successfully converted to browser-ready H.264.")
+                for _ in range(6):
+                    try:
+                        os.replace(str(temp_web_path), str(src_path))
+                        print(f"[Pipeline] Output video successfully converted to browser-ready H.264.")
+                        return
+                    except PermissionError:
+                        time.sleep(0.4)
+                print(f"[Pipeline] Warning: Could not replace destination due to file lock.")
         except Exception as e:
             print(f"[Pipeline] Note: Could not re-encode with ffmpeg ({e}), using default video.")
 
